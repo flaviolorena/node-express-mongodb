@@ -7,7 +7,23 @@ class AutorController {
     autores.find((err, autores) =>{
       res.status(200).json(autores);
     })
-  }  
+  }
+
+  //cara youtube q funciona
+  // static listarAutores = async (req,res) =>{
+  //   const autoresBusca = await autores.find()
+  //   if(!autoresBusca) return res.status(200).json({'message': "Sem autores"});
+  //   res.json(autoresBusca)
+  // }  
+  
+  //teste adaptação
+  static listarAutores = async (req,res) =>{
+    const autoresBusca = await autores.find()
+    if(!autoresBusca) return res.sendStatus(400).json({'message': "Falha ao buscar autores"});
+    res.json(autoresBusca)
+  }
+
+
   static listarAutorPorId = (req,res) =>{
     const id = req.params.id;
     autores.findById(id, (err,autores) =>{
