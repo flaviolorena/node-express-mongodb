@@ -18,76 +18,75 @@ class AutorController {
   
   //teste adaptação
   static listarAutores = async (req,res) =>{
-    const autor = await autores.find()
-    if(!autor) return res.status(400).send({message: `${err.message} - Autor não encontrado`})
-    res.json(autor)
+    try{
+      const autor = await autores.find()
+      res.status(200).json(autor)
+
+    }
+    catch(err){
+      res.status(400).json({'message': `Lista não encontrada - ${err.message}  `})
+    }
   }
 
-  // static listarAutorPorId = (req,res) =>{
-  //   const id = req.params.id;
-  //   autores.findById(id, (err,autores) =>{
-  //     if(err){
-  //       res.status(400).send({message: `${err.message} - ID não encontrado`})
-  //     }else{
-  //       res.status(200).send(autores)
-  //     }
-  //   } )
-  // }  
-  
+
+
   static listarAutorPorId = async (req,res) =>{
-    const id = req.params.id;
-    const autor = await autores.findById(id)
-    if(!autor){
-      //não esta exibindo a mensagem de erro
-      res.status(200).send({'message': "ID nao encontrado"})
-    }else{
+    try{
+      const id = req.params.id;
+      const autor = await autores.findById(id)
       res.status(200).send(autor)
     }
-
-    // if(!autor){
-    //   // res.status(400).json({"message": "Sem autores"});
-    //   // console.log("nao encontrado")
-    //   res.send("nao encontrado")
-    //   console.log("nao deu")
-
-    // }else{
-    //   res.status(200).send(autor)
-    // }
+    catch(err){
+      res.status(400).json({'message': `ID não encontrado - ${err.message}  `})
+    }
 }  
   
 
 // utiliza o schema para cadastrar autor, o metodo save para salvar no banco com o tratamento de erro. caso sucesso, retorna o status e converte em JSON 
-  static cadastrarAutor = (req,res) =>{
-    let autor = new autores(req.body);
-    autor.save((err) =>{
-      if (err){
-        res.status(500).send({message: `${err.message} - falha ao cadastrar autor` })
-      }else{
-        res.status(201).send(autor.toJSON())
-      }
-    })
+  // static cadastrarAutor = (req,res) =>{
+  //   let autor = new autores(req.body);
+  //   autor.save((err) =>{
+  //     if (err){
+  //       res.status(500).send({message: `${err.message} - falha ao cadastrar autor` })
+  //     }else{
+  //       res.status(201).send(autor.toJSON())
+  //     }
+  //   })
+  // }  
+  
+  static cadastrarAutor = async (req,res) =>{
+    try{
+      let autor = new autores(req.body);
+      const cadastroAutor = await autor.save();
+      res.status(201).send(cadastroAutor.toJSON())
+
+    }
+    catch(err){
+      res.status(500).json({'message': `Falha ao cadastrar - ${err.message}  `})
+    }
   }
   
-  static atualizarAutor = (req,res) =>{
-    const id = req.params.id;
-    autores.findByIdAndUpdate(id, {$set: req.body},(err) =>{
-      if(!err){
-        res.status(200).send({message: 'autor atualizado com sucesso'})
-      }else{
-        res.status(500).send({message:err.message})
-      }
-    })
+  static atualizarAutor = async (req,res) =>{
+    try{
+      const id = req.params.id;
+      await autores.findByIdAndUpdate(id, {$set: req.body})
+      res.status(200).send({message: 'Autor atualizado com sucesso'})
+    }
+    catch(err){
+      res.status(500).json({'message': `Falha ao atualizar - ${err.message}  `})
+    }
   }
+  
+  static deletarAutor = async (req,res) =>{
+    try{
+      const id = req.params.id;
+      await autores.findByIdAndDelete(id)
+      res.status(200).send({message: "Autor deletado com sucesso"})
+    }
+    catch(err){
+      res.status(500).json({'message': `Falha ao deletar - ${err.message}  `})
 
-  static deletarAutor = (req,res) =>{
-    const id = req.params.id;
-    autores.findByIdAndDelete(id, (err,autores) =>{
-      if(!err){
-        res.status(200).send({message: "autor removido"})
-      }else{
-        res.status(500).send({message: err.message})
-      }
-    } )
+    }
   }
 }
 
